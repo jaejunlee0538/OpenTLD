@@ -20,13 +20,13 @@ clc; clear all; cd mex;
 
 if ispc
     disp('PC');
-    include = ' -Ic:\OpenCV2.2\include\opencv\ -Ic:\OpenCV2.2\include\';
-    libpath = 'c:\OpenCV2.2\lib\';
-    files = dir([libpath '*.lib']);
+    include = ' -IC:\OpenCV\OpenCV-2.2.0\build_x64\include\opencv -IC:\OpenCV\OpenCV-2.2.0\build_x64\include';
+    libpath = 'C:\OpenCV\OpenCV-2.2.0\build_x64\lib';
+    files = dir([libpath '\*.lib']);
     
     lib = [];
     for i = 1:length(files),
-        lib = [lib ' ' libpath files(i).name];
+        lib = [lib ' ' libpath '\' files(i).name];
     end
     
     eval(['mex lk.cpp -O' include lib]);

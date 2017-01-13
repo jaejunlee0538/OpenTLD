@@ -17,14 +17,26 @@
 
 function source = tldInitSource(source)
 % Initializes video stream from camera or an image sequence.
-
+source.video_file = 0;
 % Video stream
 if source.camera
     initcamera;
     source.idx    = 1:10000; 
-    
-% Image sequence    
+% Image sequence
 else
-    source.files  = img_dir(source.input);
-    source.idx    = 1:length(source.files);
+    source.video = is_video(source.input);
+    if source.video 
+        % video file
+%         source.input
+        if ~exist(source.input, 'file')
+            error('Path does not exist(%s)', source.input)
+        end
+        source.video_handle = VideoReader(source.input);
+        source.idx = 1:int16(source.video_handle.FrameRate*source.video_handle.Duration);
+    else
+        % image sequence
+        source.files  = img_dir(source.input);
+        source.idx    = 1:length(source.files); 
+    end
+
 end

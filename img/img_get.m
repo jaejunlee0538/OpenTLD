@@ -20,6 +20,8 @@ function img = img_get(source,I)
 
 if source.camera
     img = img_alloc(getsnapshot(source.vid));
+elseif source.video
+    img = img_alloc(readFrame(source.video_handle));
 else
     img = img_alloc(source.files(source.idx(I)).name);
 end

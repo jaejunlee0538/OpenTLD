@@ -56,7 +56,7 @@ tld.conf    = nan(1,length(tld.source.idx));
 tld.valid   = nan(1,length(tld.source.idx));
 tld.size    = nan(1,length(tld.source.idx));
 tld.trackerfailure = nan(1,length(tld.source.idx));
-tld.draw    = zeros(2,0);
+tld.draw    = zeros(2,0);% tracked object's trajectories
 tld.pts     = zeros(2,0);
 % Fill first fields
 tld.img{1}  = tld.source.im0;

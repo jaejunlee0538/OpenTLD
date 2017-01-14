@@ -23,6 +23,7 @@ if ischar(in)
     in = imread(in);
 end
 
+img.original_input = in;
 if ndims(in) == 3
     %img.input = in(:,:,2);
     img.input = rgb2gray(in);

@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-function source = tldInitFirstFrame(tld,source,min_win)
+function source = tldInitFirstFrame(tld,source,min_win, draw_original)
 
 % load the first frame into memory
 source.im0  = img_get(source,source.idx(1));
@@ -32,8 +32,11 @@ if source.camera == 0 && exist([source.input '/init.txt'],'file')
     end
 % - by mouse    
 else
-    source.bb = bb_click(tld,source.im0.input);
-    
+    if draw_original
+        source.bb = bb_click(tld,source.im0.original_input);
+    else
+        source.bb = bb_click(tld,source.im0.input);
+    end
     % check
     if isempty(source.bb) || min(bb_size(source.bb)) < min_win
        source = [];

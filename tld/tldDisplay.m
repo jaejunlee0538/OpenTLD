@@ -30,8 +30,12 @@ if varargin{1}==0
         
         set(gcf,'MenuBar','none','ToolBar','none','color',[0 0 0]);
         set(gca,'position',[0 0 1 1]);
-           
-        img = tld.img{1}.input;
+        if tld.plot.draw_original
+            img = tld.img{1}.original_input;
+        else
+            img = tld.img{1}.input;
+        end
+        
         img = embedPex(img,tld);
         img = embedNex(img,tld);
         set(tld.handle,'cdata',img);
@@ -44,9 +48,7 @@ if varargin{1}==0
         string = [num2str(tld.control.maxbbox) '/' num2str(tld.nGrid)];
         text(10,200,string,'color','white');
     end
-    
-    
-    
+
 else
     
     tld = varargin{2};
@@ -57,7 +59,11 @@ else
     if nargin == 4, text(10,10,varargin{4},'color','white'); end
     
     % Draw image
-    img = tld.img{i}.input;
+    if tld.plot.draw_original
+        img = tld.img{i}.original_input;
+    else
+        img = tld.img{i}.input;
+    end
     [H,W] = size(img);
     
     % Pex
@@ -76,7 +82,12 @@ else
         bb = bb_rescale_relative(tld.bb(:,i),4*[1 1]);
         patch = img_patch(tld.img{i}.input,bb);
         patch = imresize(patch,[Size Size]);
-        img(1:Size,1:Size) = patch;
+        switch size(img,3)
+            case 1 %gray
+                img(1:Size,1:Size) = patch;
+            case 3 %rgb
+                img(1:Size,1:Size,:) = repmat(patch,1,1,size(img,3));
+        end
     end
     %rectangle('Position',[0 0 400 400],'edgecolor','k');
     
@@ -114,8 +125,14 @@ else
     
     
     % Draw Track
-    linewidth = 2; if tld.valid(i) == 1, linewidth = 4; end;
-    color = 'y'; %if tld.conf(i) > tld.model.thr_nn_valid, color = 'b'; end
+    if tld.valid(i) == 1
+        linewidth =2 ; 
+        color = 'g';
+    else
+        linewidth = 2;
+        color = 'r';
+    end;
+    %if tld.conf(i) > tld.model.thr_nn_valid, color = 'b'; end
     
     bb = tld.bb(:,i);
     switch tld.plot.drawoutput
@@ -152,9 +169,9 @@ else
        plot(tld.draw(1,:),tld.draw(2,:),'r','linewidth',2);    
     end
     
-       if tld.plot.pts
-           plot(tld.xFJ(1,:),tld.xFJ(2,:),'.');
-       end
+   if tld.plot.pts
+       plot(tld.xFJ(1,:),tld.xFJ(2,:),'.');
+   end
     
        
     if tld.plot.help
@@ -200,8 +217,12 @@ else
 end
 pex = uint8(imresize(255*pex,Rescale));
 [pH,pW] = size(pex);
-img(1:pH,end-pW+1:end) = pex;
-
+switch size(img,3)
+    case 1
+        img(1:pH,end-pW+1:end) = pex;
+    case 3
+        img(1:pH,end-pW+1:end,:) = repmat(pex,1,1,3);
+end
 end
 
 function img = embedNex(img,tld)
@@ -215,6 +236,11 @@ else
 end
 nex = uint8(imresize(255*nex,Rescale));
 [pH,pW] = size(nex);
-img(1:pH,1:pW)= nex;
 
+switch size(img,3)
+    case 1 % gray
+        img(1:pH,1:pW) = nex;
+    case 3 % rgb
+        img(1:pH, 1:pW, :) = repmat(nex,1,1,3);
+end
 end
